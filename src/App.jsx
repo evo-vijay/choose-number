@@ -1,11 +1,24 @@
 import { useMemo, useState } from 'react';
 
 function App() {
-  const numbers = useMemo(() => Array.from({ length: 10 }, (_, i) => i + 1), [])
-  // Images are now handled purely via CSS using data-num attributes
+  // Shuffle function using Fisher-Yates algorithm
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
 
   const [flippedIndexSet, setFlippedIndexSet] = useState(new Set())
+  const [shuffleKey, setShuffleKey] = useState(0)
   // No per-index image state needed when using CSS mapping
+
+  const numbers = useMemo(() => {
+    const arr = Array.from({ length: 10 }, (_, i) => i + 1);
+    return shuffleArray(arr);
+  }, [shuffleKey])
 
   const _handleCardClick = (index) => {
     setFlippedIndexSet(prev => {
@@ -21,7 +34,7 @@ function App() {
 
   const _handleReset = () => {
     setFlippedIndexSet(new Set())
-    // Nothing else to reset for images
+    setShuffleKey(prev => prev + 1) // Trigger reshuffle
   }
 
   return (
